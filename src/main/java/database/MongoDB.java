@@ -1,12 +1,6 @@
 package database;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import org.bson.Document; 
-import org.json.simple.JSONArray; 
-import org.json.simple.JSONObject;
-import org.json.simple.parser.JSONParser;
 
 import com.mongodb.MongoClient; 
 import com.mongodb.MongoCredential;
@@ -74,17 +68,17 @@ public class MongoDB {
 
     public void connect() throws DatabaseNotFoundException {
         if (this.name != null) {
-            this.mongoClient =  new MongoClient( "localhost" , 27017 );
+            this.mongoClient =  new MongoClient(this.host , this.port);
             this.database = mongoClient.getDatabase(this.name);
             System.out.println("Connected to the database successfully");
         } else {
-            throw new DatabaseNotFoundException("Database not found");
+            throw new DatabaseNotFoundException("Database not found or credentials incorrect");
         } 
     }
 
     public void close() throws DatabaseNotFoundException {
         if (this.mongoClient != null) {
-
+            //TODO: Add close
         } else {
             throw new DatabaseNotFoundException("Database not found");
         }
@@ -112,8 +106,7 @@ public class MongoDB {
     public void addDocument(String json) throws DatabaseNotFoundException {
         MongoCollection<Document> collection = database.getCollection(this.name); 
         Document doc = Document.parse(json);
-        List<Document> list = new ArrayList<>();
-        list.add(doc);
+        collection.insertOne(doc);
     }
    
 
