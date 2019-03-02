@@ -2,6 +2,13 @@
     "configurations": [
         {
             "type": "java",
+            "name": "CodeLens (Launch) - MongoDBTest",
+            "request": "launch",
+            "mainClass": "database.MongoDBTest",
+            "projectName": "database"
+        },
+        {
+            "type": "java",
             "name": "CodeLens (Launch) - Database",
             "request": "launch",
             "mainClass": "database.Database",
