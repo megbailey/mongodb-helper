@@ -1,7 +1,10 @@
 package database;
 
-import org.bson.Document; 
+import java.util.*;
 
+import org.bson.*;
+
+//import com.mongodb.client.model.Filters;
 import com.mongodb.MongoClient; 
 import com.mongodb.MongoCredential;
 import com.mongodb.client.MongoDatabase; 
@@ -96,7 +99,6 @@ public class MongoDB {
         }
     }
 
-   
     public void createCollection(String name) throws DatabaseNotFoundException {
         try {
             this.database.createCollection(name); 
@@ -117,11 +119,53 @@ public class MongoDB {
         }
     }
 
-    public void addDocument(String json) throws DatabaseNotFoundException {
-        MongoCollection<Document> collection = database.getCollection(this.name); 
-        Document doc = Document.parse(json);
-        collection.insertOne(doc);
+    public void listCollections() throws DatabaseNotFoundException {
+        try {
+            for (String name : database.listCollectionNames()) 
+            System.out.println(name);
+        } catch (Exception e) {
+            e.printStackTrace();
+            throw new DatabaseNotFoundException("Database not found");
+        }
     }
+
+    public Document createDocument(String json) throws DatabaseNotFoundException {
+        try {
+        Document doc = Document.parse(json);
+        return doc;
+        } catch (Exception e) {
+            e.printStackTrace();
+            throw new DatabaseNotFoundException("Database not found");
+        }
+    }
+
+    public void addDocument(Document doc) throws DatabaseNotFoundException {
+        try {
+        MongoCollection<Document> collection = database.getCollection(this.name); 
+        collection.insertOne(doc);
+        } catch (Exception e) {
+            e.printStackTrace();
+            throw new DatabaseNotFoundException("Database not found");
+        }
+    }
+
+    public void addManyDocuments(List<Document> documents) throws DatabaseNotFoundException {
+        try {
+        MongoCollection<Document> collection = database.getCollection(this.name); 
+        collection.insertMany(documents);
+        } catch (Exception e) {
+            e.printStackTrace();
+            throw new DatabaseNotFoundException("Database not found");
+        }
+    }
+/*
+    public void deleteDocument(String field, String value) throws DatabaseNotFoundException {
+        MongoCollection<Document> collection = database.getCollection(this.name);
+        collection.deleteOne(eq(field, value));
+    }
+*/
+    
+
    
     /*
     * =================================================================
