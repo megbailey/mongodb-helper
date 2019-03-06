@@ -28,7 +28,7 @@ public class MongoDB {
 
     public MongoDB() {
         this.host = null;
-        this.port = 0;
+        this.port = 27017;
         this.name = null;
         this.mongoClient = null;
         this.database = null;
@@ -78,10 +78,21 @@ public class MongoDB {
     * =================================================================
     */
 
-    public void connect() throws DatabaseNotFoundException {
+    public void client() throws ClientNotAvailableException {
         try {
             this.mongoClient =  new MongoClient(this.host , this.port);
-            this.database = mongoClient.getDatabase(this.name);
+        } catch (Exception e) {
+            e.printStackTrace();
+            throw new ClientNotAvailableException("Database not found or credentials incorrect");
+        } 
+    }
+
+    public void connect() throws DatabaseNotFoundException {
+        try {
+            if (this.mongoClient == null) {
+                client();
+            }
+            this.database = this.mongoClient.getDatabase(this.name);
             System.out.println("Connected to the database successfully");
         } catch (Exception e) {
             e.printStackTrace();
@@ -89,13 +100,13 @@ public class MongoDB {
         } 
     }
 
-    public void close() throws DatabaseNotFoundException {
+    public void close() throws ClientNotAvailableException {
         try {
             mongoClient.close();
             System.out.println("Client closed successfully"); 
         } catch (Exception e) {
             e.printStackTrace();
-            throw new DatabaseNotFoundException("Database not found");
+            throw new ClientNotAvailableException("Database not found");
         }
     }
 
@@ -204,6 +215,12 @@ public class MongoDB {
 class DatabaseNotFoundException extends Exception {
       public DatabaseNotFoundException() {}
       public DatabaseNotFoundException(String message) {
+        super(message);
+      }
+}
+class ClientNotAvailableException extends Exception {
+    public ClientNotAvailableException() {}
+      public ClientNotAvailableException(String message) {
         super(message);
       }
 }
